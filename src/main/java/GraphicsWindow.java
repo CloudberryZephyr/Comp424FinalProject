@@ -142,7 +142,6 @@ public class GraphicsWindow extends JPanel {
     private class MouseWheelInput implements MouseWheelListener {
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
-            System.out.println(e.getPreciseWheelRotation());
             scale += (float)(e.getPreciseWheelRotation());
             scale = Math.max(scale,0.25f);
         }
