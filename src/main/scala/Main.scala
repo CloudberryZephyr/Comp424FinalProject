@@ -2,20 +2,21 @@ import scala.annotation.tailrec
 import scala.util.Random
 import scala.collection.parallel.CollectionConverters.*
 
-object Main {
 
   @main def main(): Unit = {
 
     val dt = 1
-    var nBodies: List[Body] = null
-
+    var nBodies: List[Body] = generateBodies(5000)
+    
+    val (time, x) = timeIt(
     // keep repeating loop
-    while(true) {
+    for( x <- 0 until 50) {
       // calculate ALL new motions
       nBodies = calculateAllNewMotions(nBodies,dt)
       // apply ALL new motions
       nBodies = applyAllNewMotions(nBodies,dt)
-    }
+    })
+    println(time)
   }
 
   def calculateAllNewMotions(nBodies: List[Body],dt: Int):List[Body] = {
@@ -47,4 +48,17 @@ object Main {
       generateBodies(numBodies, bodies ++ List[Body](newBody))
     }
   }
-}
+
+  /**
+   * Returns both the answer and the clock time required to compute it for any function
+   *
+   * @param f the expression to be executed
+   * @tparam A the type to which f evaluates
+   * @return the time to compute and value of f
+   */
+  def timeIt[A](f: => A): (Double, A) = {
+    val startTime = System.currentTimeMillis()
+    val result = f
+    val endTime = System.currentTimeMillis()
+    (endTime - startTime, result)
+  }
