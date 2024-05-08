@@ -7,16 +7,13 @@ import scala.collection.parallel.CollectionConverters.*
 
     val dt = 1
     var nBodies: List[Body] = generateBodies(5000)
-    
-    val (time, x) = timeIt(
     // keep repeating loop
-    for( x <- 0 until 50) {
+    while(true) {
       // calculate ALL new motions
       nBodies = calculateAllNewMotions(nBodies,dt)
       // apply ALL new motions
       nBodies = applyAllNewMotions(nBodies,dt)
-    })
-    println(time)
+    }
   }
 
   def calculateAllNewMotions(nBodies: List[Body],dt: Int):List[Body] = {
@@ -49,16 +46,3 @@ import scala.collection.parallel.CollectionConverters.*
     }
   }
 
-  /**
-   * Returns both the answer and the clock time required to compute it for any function
-   *
-   * @param f the expression to be executed
-   * @tparam A the type to which f evaluates
-   * @return the time to compute and value of f
-   */
-  def timeIt[A](f: => A): (Double, A) = {
-    val startTime = System.currentTimeMillis()
-    val result = f
-    val endTime = System.currentTimeMillis()
-    (endTime - startTime, result)
-  }
