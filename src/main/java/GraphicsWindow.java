@@ -17,14 +17,8 @@ public class GraphicsWindow extends JPanel {
     private float scale = 1;
 
     private long lastRepaint = System.currentTimeMillis();
-    public static void main(String[] args) {
-        GraphicsWindow w = new GraphicsWindow();
-        while (true){
-            w.repaint();
-        }
-    }
+    private List<Body> objects = null;
 
-    Simulation simulation = Simulation.solarSystem();
     public GraphicsWindow(){
         JFrame frame = new JFrame("N-body simulation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,6 +35,11 @@ public class GraphicsWindow extends JPanel {
         addMouseWheelListener(new MouseWheelInput());
     }
 
+    public void paint(List<Body> objects){
+        this.objects = objects;
+        repaint();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -54,17 +53,16 @@ public class GraphicsWindow extends JPanel {
         if (left) cameraX -= CAMERA_MOVE_SPEED*deltaTime/scale;
         if (right) cameraX += CAMERA_MOVE_SPEED*deltaTime/scale;
 
-        List<SimulationBody> objects = simulation.getObjects();
-
         // Converts graphics into more powerful graphics
         Graphics2D g2 = (Graphics2D) g;
 
         // Translates the graphics space so that 0,0 is in the center of the screen
         g2.translate( getWidth()/2-(cameraX*scale), getHeight()/2-(cameraY*scale) );
 
+        if (objects == null){ continuel }
         for (int i = 0; i < objects.length(); i++){
 
-            SimulationBody body = objects.apply(i);
+            Body body = objects.apply(i);
             float scaledX = body.x()*scale;
             float scaledY = body.y()*scale;
             float scaledR = body.radius()*scale;
