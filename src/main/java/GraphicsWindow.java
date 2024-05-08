@@ -1,10 +1,16 @@
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.*;
+import scala.collection.immutable.List;
 
 public class GraphicsWindow extends JPanel {
 
-    private float cameraX = 30;
+    private float cameraX = 0;
     private float cameraY = 0;
     private boolean forward, backward, left, right;
     private static final float CAMERA_MOVE_SPEED = 5f;
@@ -17,6 +23,8 @@ public class GraphicsWindow extends JPanel {
             w.repaint();
         }
     }
+
+    Simulation simulation = Simulation.solarSystem();
     public GraphicsWindow(){
         JFrame frame = new JFrame("N-body simulation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,11 +54,7 @@ public class GraphicsWindow extends JPanel {
         if (left) cameraX -= CAMERA_MOVE_SPEED*deltaTime/scale;
         if (right) cameraX += CAMERA_MOVE_SPEED*deltaTime/scale;
 
-
-        //TODO get info from objects
-        float scaledX = 0*scale;
-        float scaledY = 0*scale;
-        float scaledR = 50*scale;
+        List<SimulationBody> objects = simulation.getObjects();
 
         // Converts graphics into more powerful graphics
         Graphics2D g2 = (Graphics2D) g;
@@ -58,22 +62,41 @@ public class GraphicsWindow extends JPanel {
         // Translates the graphics space so that 0,0 is in the center of the screen
         g2.translate( getWidth()/2-(cameraX*scale), getHeight()/2-(cameraY*scale) );
 
-        // Draw Objects
-        g2.setColor(Color.YELLOW);
+        for (int i = 0; i < objects.length(); i++){
 
-        g2.translate( scaledX-scaledR , scaledY-scaledR );
+            SimulationBody body = objects.apply(i);
+            float scaledX = body.x()*scale;
+            float scaledY = body.y()*scale;
+            float scaledR = body.radius()*scale;
 
-        g2.fillOval(
-                (int)(0),
-                (int)(0),
-                (int)(2*scaledR),
-                (int)(2*scaledR)
-        );
+            if (cameraX*scale - getWidth()/2 > scaledX + scaledR ||
+                cameraX*scale + getWidth()/2 < scaledX - scaledR ||
+                cameraY*scale - getHeight()/2 > scaledY + scaledR ||
+                cameraY*scale + getHeight()/2 < scaledY - scaledR
+            ) {
+                continue; // Object is off screen, dont take the time to render it
+            }
 
-        g2.translate( scaledR-scaledX, scaledR-scaledY );
+            // Draw The object
+            g2.setColor(body.color());
+            g2.translate( scaledX-scaledR , scaledY-scaledR );
+            g2.fillOval(
+                    (int)(0),
+                    (int)(0),
+                    (int)(2*scaledR),
+                    (int)(2*scaledR)
+            );
 
-        g2.setColor(Color.BLACK);
-        drawTextCentered(g2,"The Sun",0,0);
+            drawTextCentered(g2, body.label(), (int)scaledR, -10);
+
+            g2.translate( scaledR-scaledX, scaledR-scaledY );
+
+        }
+
+        g2.setColor(Color.WHITE);
+        g2.drawString(String.format("(%.2f,%.2f)",cameraX,cameraY),cameraX*scale-getWidth()/2 + 10, cameraY*scale-getHeight()/2 + 15);
+        g2.drawString(String.format("Zoom: %.3fx",scale),cameraX*scale-getWidth()/2 + 10, cameraY*scale-getHeight()/2 + 30);
+        g2.drawString(String.format("Simulation Speed: %.1fx",1f),cameraX*scale-getWidth()/2 + 10, cameraY*scale-getHeight()/2 + 45);
 
     }
 
@@ -143,7 +166,7 @@ public class GraphicsWindow extends JPanel {
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
             scale += (float)(e.getPreciseWheelRotation());
-            scale = Math.max(scale,0.25f);
+            scale = Math.max(scale,0.001f);
         }
     }
 }
