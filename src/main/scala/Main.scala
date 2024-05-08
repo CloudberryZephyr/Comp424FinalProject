@@ -5,7 +5,7 @@ import scala.collection.parallel.CollectionConverters.*
 object Main {
 
   @main def main(): Unit = {
-    var bodies: List[Body] = generateBodies(5)
+    val bodies: List[Body] = generateBodies(5)
     val dt: Int = 1
 
     // keep repeating loop
