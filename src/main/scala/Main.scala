@@ -7,7 +7,7 @@ object Main {
   @main def main(): Unit = {
 
     val dt = 1
-    var nBodies: List[Body] = null
+    var nBodies: List[Body] = generateBodies(10)
 
     // keep repeating loop
     while(true) {
@@ -15,6 +15,8 @@ object Main {
       nBodies = calculateAllNewMotions(nBodies,dt)
       // apply ALL new motions
       nBodies = applyAllNewMotions(nBodies,dt)
+      // graphically display the thing
+      // sam does this
     }
   }
 
