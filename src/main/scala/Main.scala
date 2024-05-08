@@ -1,11 +1,30 @@
 import scala.annotation.tailrec
 import scala.util.Random
+import scala.collection.parallel.CollectionConverters.*
 
 object Main {
 
   @main def main(): Unit = {
 
+    val dt = 1
+    var nBodies: List[Body] = null
 
+    // keep repeating loop
+    while(true) {
+      // calculate ALL new motions
+      nBodies = calculateAllNewMotions(nBodies,dt)
+      // apply ALL new motions
+      nBodies = applyAllNewMotions(nBodies,dt)
+    }
+
+  }
+
+  def calculateAllNewMotions(nBodies: List[Body],dt: Int):List[Body] = {
+    nBodies.par.map((x)=>(nBodies.foldLeft(x)(_.calcMotion(_,dt)))).toList
+  }
+
+  def applyAllNewMotions(nBodies: List[Body], dt: Int): List[Body] = {
+    nBodies.par.map((x) => (x.applyMotion(dt))).toList
   }
 
   @tailrec
