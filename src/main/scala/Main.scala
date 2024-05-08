@@ -16,7 +16,6 @@ object Main {
       // apply ALL new motions
       nBodies = applyAllNewMotions(nBodies,dt)
     }
-
   }
 
   def calculateAllNewMotions(nBodies: List[Body],dt: Int):List[Body] = {
