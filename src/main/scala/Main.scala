@@ -5,33 +5,16 @@ import scala.collection.parallel.CollectionConverters.*
 object Main {
 
   @main def main(): Unit = {
-      val bodies: List[Body] = generateBodies(Random().nextInt(100))
-      val dt: Int = 1
-
-    val dt = 1
-    var nBodies: List[Body] = null
+    var bodies: List[Body] = generateBodies(5)
+    val dt: Int = 1
 
     // keep repeating loop
     while(true) {
       // calculate ALL new motions
-      nBodies = calculateAllNewMotions(nBodies,dt)
+      bodies.par.map((x)=>(bodies.foldLeft(x)(_.calcMotion(_,dt)))).toList
       // apply ALL new motions
-      nBodies = applyAllNewMotions(nBodies,dt)
+      bodies.par.map(_.applyMotion(dt)).toList
     }
-  }
-      bodies.par.map(calcComplete(_, bodies, dt))
-
-  def calculateAllNewMotions(nBodies: List[Body],dt: Int):List[Body] = {
-    nBodies.par.map((x)=>(nBodies.foldLeft(x)(_.calcMotion(_,dt)))).toList
-  }
-
-  def applyAllNewMotions(nBodies: List[Body], dt: Int): List[Body] = {
-    nBodies.par.map((x) => (x.applyMotion(dt))).toList
-      bodies.par.map(_.applyMotion(dt))
-  }
-
-  def calcComplete(x : Body, bodies: List[Body], dt: Int) : Body = {
-      bodies.par.map(x.calcMotion(_, dt))(bodies.length-1)
   }
 
   @tailrec
