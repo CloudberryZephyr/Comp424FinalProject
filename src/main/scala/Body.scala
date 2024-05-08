@@ -6,7 +6,7 @@ class Body(val x: Double, val y: Double, val z: Double, val dx: Double, val dy: 
     Body(x,y,z,dx+velocity*(x+other.x),dy+velocity*(y+other.y),dz+velocity*(z+other.z),mass,radius,name)
   }
 
-  def doMotion(dt: Int): Body = {
+  def applyMotion(dt: Int): Body = {
     Body(x+dx*dt,y+dy*dt,z+dy*dt,dx,dy,dz,mass,radius,name)
   }
 }
